@@ -46,6 +46,7 @@
     map)
   "Allows you to go to next and previous hit isearch-style.")
 
+;;;###autoload
 (defun swiper-helm (&optional initial-input)
   "`isearch' with an overview using `helm'.
 When non-nil, INITIAL-INPUT is the initial search pattern."
