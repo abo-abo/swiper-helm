@@ -39,12 +39,28 @@
 (require 'swiper)
 (require 'helm)
 
+(defgroup swiper nil
+  "`isearch' with an overview using `helm'."
+  :group 'matching
+  :prefix "swiper-helm-")
+
 (defvar swiper-helm-keymap
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-s") 'helm-next-line)
     (define-key map (kbd "C-r") 'helm-previous-line)
     map)
   "Allows you to go to next and previous hit isearch-style.")
+
+(defun swiper-helm-default-display-buffer (buf)
+  "Display BUF buffer."
+  (when (one-window-p)
+    (split-window-vertically))
+  (other-window 1)
+  (switch-to-buffer buf))
+
+(defcustom swiper-helm-display-function 'swiper-helm-default-display-buffer
+  "When non-nil, use the default vertical split behavior."
+  :type 'function)
 
 ;;;###autoload
 (defun swiper-helm (&optional initial-input)
@@ -55,12 +71,7 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
   (require 'helm-match-plugin)
   (swiper--init)
   (unwind-protect
-       (let ((helm-display-function
-              (lambda (buf)
-                (when (one-window-p)
-                  (split-window-vertically))
-                (other-window 1)
-                (switch-to-buffer buf)))
+       (let ((helm-display-function swiper-helm-display-function)
              helm-candidate-number-limit)
          (helm :sources
                `((name . ,(buffer-name))
