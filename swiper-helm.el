@@ -39,7 +39,7 @@
 (require 'swiper)
 (require 'helm)
 
-(defgroup swiper nil
+(defgroup swiper-helm nil
   "`isearch' with an overview using `helm'."
   :group 'matching
   :prefix "swiper-helm-")
@@ -59,7 +59,7 @@
   (switch-to-buffer buf))
 
 (defcustom swiper-helm-display-function 'swiper-helm-default-display-buffer
-  "When non-nil, use the default vertical split behavior."
+  "The function that switches to the window where helm should be."
   :type 'function)
 
 ;;;###autoload
