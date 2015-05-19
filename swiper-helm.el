@@ -186,7 +186,8 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
 
 (defun swiper--action-helm (x)
   "Goto line X."
-  (swiper--action x helm-input))
+  (swiper--action x helm-input)
+  (recenter))
 
 (provide 'swiper-helm)
 
