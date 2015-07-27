@@ -189,6 +189,15 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
   (swiper--action x helm-input)
   (recenter))
 
+(defun swiper-helm-from-isearch ()
+  "Invoke `swiper-helm' from isearch."
+  (interactive)
+  (let ((query (if isearch-regexp
+                   isearch-string
+                 (regexp-quote isearch-string))))
+    (isearch-exit)
+    (swiper-helm query)))
+
 (provide 'swiper-helm)
 
 ;;; swiper-helm.el ends here
