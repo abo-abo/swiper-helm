@@ -70,6 +70,9 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
   (require 'helm)
   (require 'helm-match-plugin)
   (swiper--init)
+  (setq ivy-last
+        (make-ivy-state
+         :window (selected-window)))
   (unwind-protect
        (let ((helm-display-function swiper-helm-display-function)
              helm-candidate-number-limit)
