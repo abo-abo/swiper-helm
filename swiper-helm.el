@@ -105,14 +105,15 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
 (defun swiper--update-input-helm ()
   "Update selection."
   (swiper--cleanup)
-  (with-selected-window swiper--window
-    (swiper--add-overlays
-     (ivy--regex helm-input)
-     (window-start swiper--window)
-     (window-end swiper--window t)))
-  (when (/= (length helm-input) swiper--len)
-    (setq swiper--len (length helm-input))
-    (swiper--reanchor)))
+  (let ((swiper--window (ivy-state-window ivy-last)))
+    (with-selected-window swiper--window
+      (swiper--add-overlays
+       (ivy--regex helm-input)
+       (window-start swiper--window)
+       (window-end swiper--window t)))
+    (when (/= (length helm-input) swiper--len)
+      (setq swiper--len (length helm-input))
+      (swiper--reanchor))))
 
 (defun swiper--binary (beg end)
   "Find anchor between BEG and END."
@@ -153,19 +154,17 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
                   (string-to-number (match-string 0 str))
                 0))
          pt)
-    (when (> (length re) 0)
-      (with-selected-window swiper--window
+    (with-ivy-window
+      (when (> (length re) 0)
         (goto-char (point-min))
         (forward-line (1- num))
         (when (re-search-forward re (point-max) t)
-          (setq pt (match-beginning 0))))
-      (when pt
-        (with-selected-window
-            (helm-persistent-action-display-window)
+          (setq pt (match-beginning 0)))
+        (when pt
+          (helm-persistent-action-display-window)
           (goto-char pt)
           (recenter)
-          (swiper--update-input-helm))))
-    (with-selected-window swiper--window
+          (swiper--update-input-helm)))
       (let ((ov (make-overlay
                  (line-beginning-position)
                  (1+ (line-end-position)))))
