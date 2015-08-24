@@ -68,7 +68,7 @@
 When non-nil, INITIAL-INPUT is the initial search pattern."
   (interactive)
   (require 'helm)
-  (require 'helm-match-plugin)
+  (require 'helm-multi-match)
   (swiper--init)
   (setq ivy-last
         (make-ivy-state
