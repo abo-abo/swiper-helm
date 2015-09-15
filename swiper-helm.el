@@ -88,7 +88,7 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
                  (match-strict . (lambda (x)
                                    (ignore-errors
                                      (string-match (ivy--regex helm-input) x))))
-                 (candidates . ,(swiper--candidates))
+                 (candidates . ,(swiper--helm-candidates))
                  (filtered-candidate-transformer
                   helm-fuzzy-highlight-matches)
                  (action . swiper--action-helm))
@@ -188,7 +188,21 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
 
 (defun swiper--action-helm (x)
   "Goto line X."
-  (swiper--action x helm-input)
+  (if (null x)
+      (user-error "No candidates")
+    (goto-char (point-min))
+    (forward-line (1- (read x)))
+    (re-search-forward
+     (ivy--regex helm-input)
+     (line-end-position)
+     t)
+    (swiper--ensure-visible)
+    (when (/= (point) swiper--opoint)
+      (unless (and transient-mark-mode
+                   mark-active)
+        (push-mark swiper--opoint t)
+        (message
+         "Mark saved where search started"))))
   (recenter))
 
 (defun swiper-helm-from-isearch ()
@@ -199,6 +213,28 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
                  (regexp-quote isearch-string))))
     (isearch-exit)
     (swiper-helm query)))
+
+(defun swiper--helm-candidates ()
+  "Return a list of this buffer lines."
+  (let ((n-lines (count-lines (point-min) (point-max))))
+    (unless (zerop n-lines)
+      (setq swiper--width (1+ (floor (log n-lines 10))))
+      (setq swiper--format-spec
+            (format "%%-%dd %%s" swiper--width))
+      (let ((line-number 0)
+            candidates)
+        (save-excursion
+          (goto-char (point-min))
+          (swiper-font-lock-ensure)
+          (while (< (point) (point-max))
+            (push (format swiper--format-spec
+                          (cl-incf line-number)
+                          (buffer-substring
+                           (line-beginning-position)
+                           (line-end-position)))
+                  candidates)
+            (forward-line 1))
+          (nreverse candidates))))))
 
 (provide 'swiper-helm)
 
