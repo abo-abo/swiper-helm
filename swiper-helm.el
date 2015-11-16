@@ -62,6 +62,20 @@
   "The function that switches to the window where helm should be."
   :type 'function)
 
+(defvar swiper--anchor nil
+  "A line number to which the search should be anchored.")
+
+(defvar swiper--len 0
+  "The last length of input for which an anchoring was made.")
+
+(defun swiper--helm-init ()
+  "Perform initialization common to both completion methods."
+  (setq swiper--opoint (point))
+  (setq swiper--len 0)
+  (setq swiper--anchor (line-number-at-pos))
+  (when (bound-and-true-p evil-jumper-mode)
+    (evil-jumper--set-jump)))
+
 ;;;###autoload
 (defun swiper-helm (&optional initial-input)
   "`isearch' with an overview using `helm'.
@@ -69,7 +83,7 @@ When non-nil, INITIAL-INPUT is the initial search pattern."
   (interactive)
   (require 'helm)
   (require 'helm-multi-match)
-  (swiper--init)
+  (swiper--helm-init)
   (setq ivy-last
         (make-ivy-state
          :window (selected-window)))
