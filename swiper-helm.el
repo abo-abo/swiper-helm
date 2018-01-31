@@ -51,7 +51,7 @@
     map)
   "Allows you to go to next and previous hit isearch-style.")
 
-(defun swiper-helm-default-display-buffer (buf)
+(defun swiper-helm-default-display-buffer (buf &optional _resume)
   "Display BUF buffer."
   (when (one-window-p)
     (split-window-vertically))
